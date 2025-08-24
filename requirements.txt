@@ -1,0 +1,5 @@
+git+https://github.com/juliecious/simple-einet.git
+pre-commit
+scikit-learn
+pandas
+numpy
