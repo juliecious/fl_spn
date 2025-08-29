@@ -2,6 +2,7 @@ from typing import Dict
 
 import numpy as np
 import pandas as pd
+from simple_einet.einet import Einet
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.preprocessing import OneHotEncoder
@@ -108,7 +109,7 @@ def generate_demo_data(
     return data
 
 
-def _accuracy(model, X, y):
+def _accuracy(model: Einet, X: torch.tensor, y: torch.tensor):
     with torch.no_grad():
         outputs = model(X)
         predictions = outputs.argmax(-1)
@@ -117,7 +118,7 @@ def _accuracy(model, X, y):
         return 100.0 * correct / total
 
 
-def _f1_score(model, X, y, num_classes=None):
+def _f1_score(model: Einet, X: torch.tensor, y: torch.tensor, num_classes=None):
     with torch.no_grad():
         outputs = model(X)
         predictions = outputs.argmax(-1)
