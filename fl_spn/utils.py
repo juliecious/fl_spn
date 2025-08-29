@@ -108,5 +108,40 @@ def generate_demo_data(
     return data
 
 
+def _accuracy(model, X, y):
+    with torch.no_grad():
+        outputs = model(X)
+        predictions = outputs.argmax(-1)
+        correct = (predictions == y).sum()
+        total = y.shape[0]
+        return 100.0 * correct / total
+
+
+def _f1_score(model, X, y, num_classes=None):
+    with torch.no_grad():
+        outputs = model(X)
+        predictions = outputs.argmax(-1)
+        # 假設 y 和 predictions 為 1D tensor
+        if num_classes is None:
+            num_classes = int(torch.max(y).item()) + 1
+        f1_scores = []
+        for c in range(num_classes):
+            tp = ((predictions == c) & (y == c)).sum().item()
+            fp = ((predictions == c) & (y != c)).sum().item()
+            fn = ((predictions != c) & (y == c)).sum().item()
+            if tp + fp + fn == 0:
+                f1 = 0.0  # 防止0除
+            else:
+                precision = tp / (tp + fp) if (tp + fp) != 0 else 0.0
+                recall = tp / (tp + fn) if (tp + fn) != 0 else 0.0
+                if precision + recall == 0:
+                    f1 = 0.0
+                else:
+                    f1 = 2 * (precision * recall) / (precision + recall)
+            f1_scores.append(f1)
+        # 取 macro-average F1
+        return 100.0 * sum(f1_scores) / len(f1_scores)
+
+
 if __name__ == "__main__":
     print(load_dataset(name="adult", test_size=0.2, random_state=42).keys())
