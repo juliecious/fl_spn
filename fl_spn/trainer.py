@@ -324,13 +324,11 @@ class FederatedEiNetTrainer:
                 continue
 
             X_test_client = X_test[:, client_feature_indices]
-            X_test_client_reshaped = torch.tensor(X_test_client).unsqueeze(1)
+            X_test_client_reshaped = X_test_client.unsqueeze(1)
 
             try:
                 acc = _accuracy(model, X_test_client_reshaped, y_test)
-                fscore = _f1_score(
-                    model, X_test_client_reshaped, torch.from_numpy(y_test)
-                )
+                fscore = _f1_score(model, X_test_client_reshaped, y_test)
 
                 probs = torch.exp(model(X_test_client_reshaped))
                 predictions = probs.argmax(dim=-1)

@@ -70,6 +70,8 @@ def load_dataset(name: str, test_size: float = 0.2, random_state: int = 42) -> D
         "y_train": y_train_tensor,
         "y_test": y_test_tensor,
         "X_processed": X_processed,
+        "numeric_features": numeric_features,
+        "categorical_features": categorical_features,
     }
 
 
