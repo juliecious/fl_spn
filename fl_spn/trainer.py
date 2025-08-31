@@ -9,6 +9,7 @@ from sklearn.metrics import accuracy_score, f1_score
 from simple_einet.layers.distributions.piecewise_linear import PiecewiseLinear
 from simple_einet.dist import DataType, Domain
 
+from config import SupervisedFLConfig
 from utils import _accuracy, _f1_score
 
 logger = logging.getLogger(__name__)
@@ -41,7 +42,6 @@ class FederatedEiNetTrainer:
         self,
         features: List[str],
         numeric_features: List[str],
-        categorical_features: List[str],
         X_processed: pd.DataFrame,
     ) -> List:
         """
@@ -53,7 +53,6 @@ class FederatedEiNetTrainer:
         Args:
             features: List of feature names.
             numeric_features: List of features considered numeric.
-            categorical_features: List of features considered categorical.
             X_processed: DataFrame containing feature values.
 
         Returns:
@@ -85,7 +84,7 @@ class FederatedEiNetTrainer:
         client_id: str,
         client_data: Dict,
         X_processed: pd.DataFrame,
-        epochs: int = 100,
+        epochs: int = SupervisedFLConfig.epochs,
         verbose: bool = False,
     ) -> Dict:
         """
@@ -115,7 +114,6 @@ class FederatedEiNetTrainer:
         domains = self.create_domains(
             client_data["features"],
             client_data["numeric_features"],
-            client_data["categorical_features"],
             X_processed,
         )
 
@@ -192,7 +190,10 @@ class FederatedEiNetTrainer:
         }
 
     def train_federated_learning(
-        self, X_processed: pd.DataFrame, epochs: int = 100, verbose: bool = True
+        self,
+        X_processed: pd.DataFrame,
+        epochs: int = SupervisedFLConfig.epochs,
+        verbose: bool = True,
     ) -> Dict:
         """
         Run federated training across all clients specified in the partition.
@@ -272,7 +273,7 @@ class FederatedEiNetTrainer:
             logger.info(
                 f"   🎯 Weighted average training accuracy: {weighted_accuracy:.3f}"
             )
-            logger.info(f"   📈 Weighted average F1 score: {weighted_f1:.3f}")
+            logger.info(f"   📈 Weighted average training F1 score: {weighted_f1:.3f}")
             logger.info(f"   🏢 Number of participating clients:  {len(results)}")
             logger.info(f"   📊 Total samples: {total_samples}")
 
@@ -350,6 +351,21 @@ class FederatedEiNetTrainer:
             except Exception as e:
                 logger.error(f"   ❌ Client{client_id}: Evaluation failed - {str(e)}")
 
+        total_test_samples = len(y_test)
+        total_clients = len(self.partition_info["clients"].items())
+
+        weighted_accuracy = np.mean(
+            [r["accuracy"] for r in client_evaluations.values()]
+        )
+
+        weighted_f1 = np.mean([r["f1_score"] for r in client_evaluations.values()])
+
+        logger.info(f"\n📊 {self.partition_info['type']} federated learning complete!")
+        logger.info(f"   🎯 Weighted average testing accuracy: {weighted_accuracy:.3f}")
+        logger.info(f"   📈 Weighted average testing F1 score: {weighted_f1:.3f}")
+        logger.info(f"   🏢 Number of participating clients:  {total_clients}")
+        logger.info(f"   📊 Total test samples: {total_test_samples}")
+
         # Ensemble predictions (majority voting and average probability)
         if predictions_ensemble and probabilities_ensemble:
 
@@ -392,6 +408,8 @@ class FederatedEiNetTrainer:
 
         return {
             "client_evaluations": client_evaluations,
+            "test_accuracy": weighted_accuracy,
+            "test_f1": weighted_f1,
             "ensemble_accuracy": ensemble_accuracy,
             "ensemble_f1": ensemble_f1,
             "ensemble_predictions": ensemble_predictions,

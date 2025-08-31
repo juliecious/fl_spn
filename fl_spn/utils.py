@@ -73,7 +73,7 @@ def _accuracy(model: Einet, X: torch.tensor, y: torch.tensor):
         predictions = outputs.argmax(-1)
         correct = (predictions == y).sum()
         total = y.shape[0]
-        return 100.0 * correct / total
+        return (100.0 * correct / total).item()
 
 
 def _f1_score(model: Einet, X: torch.tensor, y: torch.tensor, num_classes=None):
