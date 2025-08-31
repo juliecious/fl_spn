@@ -2,6 +2,9 @@ from fl_spn.partitioner import FederatedDataPartitioner
 from trainer import FederatedEiNetTrainer
 from utils import load_dataset
 from fl_spn.config import SupervisedFLConfig
+import logging
+
+logging.basicConfig(level=logging.INFO)
 
 
 if __name__ == "__main__":
@@ -34,21 +37,21 @@ if __name__ == "__main__":
         data["X_test"], data["y_test"], data["X_processed"].columns.tolist()
     )
 
-    print("\n" + "=" * 60)
-    print("🟡 Test 3: Hybrid Partitioning")
-    print("=" * 60)
-
-    hybrid_partition = partitioner.hybrid_partition(
-        num_clients=SupervisedFLConfig.num_clients,
-        sample_overlap_ratio=SupervisedFLConfig.sample_overlap_ratio,
-        feature_overlap_ratio=SupervisedFLConfig.feature_overlap_ratio,
-        random_state=SupervisedFLConfig.random_seed,
-    )
-    hybrid_trainer = FederatedEiNetTrainer(hybrid_partition)
-    hybrid_results = hybrid_trainer.train_federated_learning(
-        data["X_processed"], epochs=SupervisedFLConfig.epochs, verbose=True
-    )
-
-    hybrid_eval = hybrid_trainer.evaluate_on_test(
-        data["X_test"], data["y_test"], data["X_processed"].columns.tolist()
-    )
+    # print("\n" + "=" * 60)
+    # print("🟡 Test 3: Hybrid Partitioning")
+    # print("=" * 60)
+    #
+    # hybrid_partition = partitioner.hybrid_partition(
+    #     num_clients=SupervisedFLConfig.num_clients,
+    #     sample_overlap_ratio=SupervisedFLConfig.sample_overlap_ratio,
+    #     feature_overlap_ratio=SupervisedFLConfig.feature_overlap_ratio,
+    #     random_state=SupervisedFLConfig.random_seed,
+    # )
+    # hybrid_trainer = FederatedEiNetTrainer(hybrid_partition)
+    # hybrid_results = hybrid_trainer.train_federated_learning(
+    #     data["X_processed"], epochs=SupervisedFLConfig.epochs, verbose=True
+    # )
+    #
+    # hybrid_eval = hybrid_trainer.evaluate_on_test(
+    #     data["X_test"], data["y_test"], data["X_processed"].columns.tolist()
+    # )

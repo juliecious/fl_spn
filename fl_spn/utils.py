@@ -3,16 +3,14 @@ from typing import Dict
 import numpy as np
 import pandas as pd
 from simple_einet.einet import Einet
-from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import LabelEncoder, StandardScaler
-from sklearn.preprocessing import OneHotEncoder
 from sklearn.model_selection import train_test_split
 from sklearn.datasets import fetch_openml
 import torch
 
 import logging
 
-logging.basicConfig(level=logging.INFO)
+
 logger = logging.getLogger(__name__)
 
 
