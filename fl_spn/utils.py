@@ -32,12 +32,6 @@ def load_dataset(name: str, test_size: float = 0.2, random_state: int = 42) -> D
     ).columns.tolist()
 
     # encoding based on feature types
-    preprocessor = ColumnTransformer(
-        transformers=[
-            ("num", StandardScaler(), numeric_features),
-            ("cat", LabelEncoder(), categorical_features),
-        ]
-    )
     X_numeric = StandardScaler().fit_transform(X[numeric_features])
     X_numeric_df = pd.DataFrame(X_numeric, columns=numeric_features, index=X.index)
 
@@ -73,42 +67,6 @@ def load_dataset(name: str, test_size: float = 0.2, random_state: int = 42) -> D
         "numeric_features": numeric_features,
         "categorical_features": categorical_features,
     }
-
-
-def generate_demo_data(
-    n_samples: int = 800, n_features: int = 12, random_seed: int = 42
-) -> np.ndarray:
-    """Generate correlated synthetic data for EiNet demonstration"""
-    np.random.seed(random_seed)
-
-    # Create multiple clusters with different characteristics
-    cluster_size = n_samples // 3
-
-    # Cluster 1: Low variance, centered around origin
-    cluster1 = np.random.multivariate_normal(
-        mean=np.zeros(n_features), cov=np.eye(n_features) * 0.5, size=cluster_size
-    )
-
-    # Cluster 2: Medium variance, shifted mean
-    cluster2 = np.random.multivariate_normal(
-        mean=np.ones(n_features) * 2.0, cov=np.eye(n_features) * 1.0, size=cluster_size
-    )
-
-    # Cluster 3: High variance, different mean
-    cluster3 = np.random.multivariate_normal(
-        mean=np.ones(n_features) * -1.5,
-        cov=np.eye(n_features) * 1.5,
-        size=n_samples - 2 * cluster_size,
-    )
-
-    # Combine clusters
-    data = np.vstack([cluster1, cluster2, cluster3])
-
-    # Shuffle
-    indices = np.random.permutation(len(data))
-    data = data[indices]
-
-    return data
 
 
 def _accuracy(model: Einet, X: torch.tensor, y: torch.tensor):

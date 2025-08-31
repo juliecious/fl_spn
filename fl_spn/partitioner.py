@@ -4,6 +4,8 @@ from typing import Dict
 
 import numpy as np
 
+from config import SupervisedFLConfig
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -32,7 +34,9 @@ class FederatedDataPartitioner:
         self.categorical_features = categorical_features
 
     def horizontal_partition(
-        self, num_clients: int = 3, random_state: int = 42
+        self,
+        num_clients: int = SupervisedFLConfig.num_clients,
+        random_state: int = SupervisedFLConfig.random_seed,
     ) -> Dict:
         """Partition samples horizontally to emulate federated learning: same features, different samples.
 
@@ -91,7 +95,11 @@ class FederatedDataPartitioner:
             "total_features": len(self.feature_names),
         }
 
-    def vertical_partition(self, num_clients: int = 3, random_state: int = 42) -> Dict:
+    def vertical_partition(
+        self,
+        num_clients: int = SupervisedFLConfig.num_clients,
+        random_state: int = SupervisedFLConfig.random_seed,
+    ) -> Dict:
         """Partition features vertically: same samples, mutually exclusive feature subsets per client.
 
         Randomly shuffles the feature set and assigns unique feature blocks to each client.
@@ -154,10 +162,10 @@ class FederatedDataPartitioner:
 
     def hybrid_partition(
         self,
-        num_clients: int = 4,
-        sample_overlap_ratio: float = 0.3,
-        feature_overlap_ratio: float = 0.2,
-        random_state: int = 42,
+        num_clients: int = SupervisedFLConfig.num_clients,
+        sample_overlap_ratio: float = SupervisedFLConfig.sample_overlap_ratio,
+        feature_overlap_ratio: float = SupervisedFLConfig.feature_overlap_ratio,
+        random_state: int = SupervisedFLConfig.random_seed,
     ) -> Dict:
         """Create a robust hybrid partition: controlled sample and feature overlap across clients.
 
