@@ -19,7 +19,7 @@ class SupervisedFLConfig:
     num_repetitions: int = 2
 
     # Training settings
-    epochs: int = 20
+    epochs: int = 100
     learning_rate: float = 0.01
     dropout: float = 0.0
     leaf_type = Normal
