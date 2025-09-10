@@ -10,7 +10,7 @@ setup(
     packages=find_packages(
         include=["fl_spn", "fl_spn.*"],
         exclude=["*.ipynb", "*.ipynb_checkpoints", "tests*"],
-    ),  # 自動尋找子模組
+    ),
     install_requires=[
         "simple-einet @ git+https://github.com/juliecious/simple-einet.git@20a4cb4f905d9f100d41184e4c107107b5d6899f",
     ],
